@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row mt-5">
+    <div class="col-md-6">
+        <!-- Картинка товара -->
+        {% if product.image %}
+            <img src="{{ product.image.url }}" alt="{{ product.name }}" class="img-fluid rounded shadow">
+        {% else %}
+            <!-- Заглушка, если картинки нет -->
+            <img src="/static/images/no_image.png" class="img-fluid rounded shadow" alt="Нет фото">
+        {% endif %}
+    </div>
+
+    <div class="col-md-6">
+        <h1 class="display-5 fw-bold">{{ product.name }}</h1>
+        <hr>
+        <p class="fs-4 text-primary">Цена: <strong>{{ product.price }} руб.</strong></p>
+        <p class="badge bg-secondary fs-6">Категория: {{ product.category.name }}</p>
+        
+        <div class="mt-4">
+            <h5>Описание товара:</h5>
+            <p class="lead">{{ product.description }}</p>
+        </div>
+
+        <div class="mt-5">
+            <a href="{% url 'home' %}" class="btn btn-outline-secondary">Назад к списку</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
