@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row mt-5">
+    <div class="col-12">
+        <h1 class="display-4">{{ object.title }}</h1>
+        <p class="text-muted">Опубликовано: {{ object.created_at|date:"d.m.Y H:i" }} | Просмотров: {{ object.views_count }}</p>
+        <hr>
+    </div>
+    
+    <div class="col-md-8">
+        {% if object.image %}
+            <img src="{{ object.image.url }}" class="img-fluid rounded mb-4" alt="{{ object.title }}">
+        {% endif %}
+        
+        <div class="blog-content fs-5">
+            {{ object.content|linebreaks }}
+        </div>
+
+        <div class="mt-5 mb-5">
+            <a href="{% url 'blog:list' %}" class="btn btn-outline-secondary">Назад к списку</a>
+            <a href="{% url 'blog:edit' object.pk %}" class="btn btn-primary">Редактировать</a>
+            <a href="{% url 'blog:delete' object.pk %}" class="btn btn-danger">Удалить</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
