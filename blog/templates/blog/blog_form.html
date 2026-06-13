@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="col-6 mx-auto card p-4 shadow">
+    <h2>{% if object %}Редактирование{% else %}Создание{% endif %} статьи</h2>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">
+            {% if object %}Сохранить{% else %}Опубликовать{% endif %}
+        </button>
+        <a href="{% url 'blog:list' %}" class="btn btn-outline-secondary">Отмена</a>
+    </form>
+</div>
+{% endblock %}
