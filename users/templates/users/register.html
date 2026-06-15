@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="col-4 mx-auto mt-5">
+    <h2>Регистрация</h2>
+
+    <form method="post">
+        {% csrf_token %}
+
+        {# Вывод ошибок, не связанных с конкретным полем (например, несовпадение паролей) #}
+        {% if form.non_field_errors %}
+            <div class="alert alert-danger">
+                {{ form.non_field_errors }}
+            </div>
+        {% endif %}
+
+        {{ form.as_p }}
+
+        <button type="submit" class="btn btn-primary">Ок</button>
+    </form>
+</div>
+{% endblock %}
