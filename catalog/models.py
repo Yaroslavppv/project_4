@@ -1,4 +1,5 @@
 from django.db import models
+from django.conf import settings
 
 # Create your models here.
 class Category(models.Model):
@@ -25,9 +26,17 @@ class Product(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания')
     updated_at = models.DateTimeField(auto_now=True, verbose_name='Дата последнего изменения')
 
+    is_published = models.BooleanField(default=False, verbose_name='Опубликовано')
+
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL,
+                              verbose_name='Владелец', null=True, blank=True)
+
     def __str__(self):
         return self.name
 
     class Meta:
         verbose_name = 'Товар'
         verbose_name_plural = 'Товары'
+        permissions = [
+            ("can_unpublish_product", "Может отменять публикацию продукта"),
+        ]

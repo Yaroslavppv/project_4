@@ -35,7 +35,9 @@
 
                 <div class="d-grid gap-2">
                     <a href="{% url 'product_detail' product.pk %}" class="btn btn-lg btn-outline-primary">Посмотреть</a>
-                    <a href="{% url 'update_product' product.pk %}" class="btn btn-outline-warning">Редактировать</a>
+                    {% if user == product.owner or user.is_superuser or perms.catalog.delete_product %}
+                        <a href="{% url 'update_product' product.pk %}" class="btn btn-outline-warning">Редактировать</a>
+                    {% endif %}
                     <button type="button" class="btn btn-lg btn-primary">Купить</button>
                 </div>
             </div>
