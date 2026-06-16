@@ -25,8 +25,15 @@
 
         <div class="mt-5">
             <a href="{% url 'home' %}" class="btn btn-outline-secondary">Назад к списку</a>
-            <a href="{% url 'update_product' product.pk %}" class="btn btn-warning ms-2">Редактировать товар</a>
-            <a href="{% url 'delete_product' product.pk %}" class="btn btn-danger ms-2">Удалить товар</a
+            {% if user == product.owner or user.is_superuser or perms.catalog.delete_product %}
+                <a href="{% url 'update_product' product.pk %}" class="btn btn-warning ms-2">Редактировать товар</a>
+                <a href="{% url 'delete_product' product.pk %}" class="btn btn-danger">Удалить</a>
+            {% endif %}
+            {% if perms.catalog.can_unpublish_product %}
+                <a href="{% url 'toggle_publish' product.pk %}" class="btn btn-warning">
+                    {% if product.is_published %} Снять с публикации {% else %} Опубликовать {% endif %}
+                </a>
+            {% endif %}
         </div>
     </div>
 </div>

@@ -1,5 +1,5 @@
 from django.urls import path
-from catalog.views import ProductListView, ProductDetailView, ContactsTemplateView, ProductCreateView, ProductUpdateView, ProductDeleteView
+from catalog.views import ProductListView, ProductDetailView, ContactsTemplateView, ProductCreateView, ProductUpdateView, ProductDeleteView, toggle_publication
 
 
 urlpatterns = [
@@ -9,4 +9,5 @@ urlpatterns = [
     path('create/', ProductCreateView.as_view(), name='create_product'),
     path('edit/<int:pk>/', ProductUpdateView.as_view(), name='update_product'),
     path('delete/<int:pk>/', ProductDeleteView.as_view(), name='delete_product'),
+    path('toggle_publish/<int:pk>/', toggle_publication, name='toggle_publish')
 ]
