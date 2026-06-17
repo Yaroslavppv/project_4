@@ -1,11 +1,13 @@
 from django.views.generic import ListView, DetailView, TemplateView, CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
-from .models import Product
+from .models import Product, Category
 from django.urls import reverse_lazy
 from .forms import ProductForm
-from django.shortcuts import get_object_or_404, redirect
+from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib.auth.decorators import permission_required
 from django.contrib.auth.mixins import UserPassesTestMixin
+from django.core.cache import cache
+from catalog.services import get_products_by_category
 
 # Create your views here.
 
@@ -24,12 +26,16 @@ class ProductListView(ListView):
     context_object_name = 'products'
 
     def get_queryset(self):
-        queryset = super().get_queryset()
+        cache_key = 'all_products_list'
 
-        if not self.request.user.has_perm('catalog.can_unpublish_product'):
-            queryset = queryset.filter(is_published=True)
+        products = cache.get(cache_key)
 
-        return queryset
+        if not products:
+            products = list(Product.objects.filter(is_published=True))
+
+            cache.set(cache_key, products, 60)
+
+        return products
 
 class ProductCreateView(LoginRequiredMixin, CreateView):
     model = Product
@@ -57,6 +63,23 @@ class ProductDetailView(LoginRequiredMixin, DetailView):
     model = Product
     template_name = 'product_detail.html'
 
+    def get_object(self, queryset=None):
+        # 1. Получаем pk текущего товара из URL
+        pk = self.kwargs.get('pk')
+
+        # 2. Создаем уникальный ключ (например: 'product_1')
+        cache_key = f'product_{pk}'
+
+        # 3. Проверяем, есть ли этот товар в Redis
+        product = cache.get(cache_key)
+
+        # 4. Если в Redis пусто — вытаскиваем из БД и сохраняем в кеш на 60 секунд
+        if not product:
+            product = super().get_object(queryset)
+            cache.set(cache_key, product, 60)
+
+        return product
+
 class ProductDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Product
     template_name = 'product_confirm_delete.html'
@@ -70,3 +93,17 @@ class ProductDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
 
 class ContactsTemplateView(TemplateView):
     template_name = 'contacts.html'
+
+
+def category_products_view(request, pk):
+    # Получаем саму категорию, чтобы вывести её название в заголовке
+    category = get_object_or_404(Category, pk=pk)
+
+    # Вызываем нашу сервисную функцию, которая сама разберется с Redis
+    products = get_products_by_category(category.pk)
+
+    context = {
+        'category': category,
+        'products': products,
+    }
+    return render(request, 'category_products.html', context)
