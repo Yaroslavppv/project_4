@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="pricing-header px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center">
+    <h1 class="display-4">Категория: {{ category.name }}</h1>
+    <p class="lead mt-3">{{ category.description }}</p>
+</div>
+
+<div class="container">
+    <div class="row text-center">
+        {% for product in products %}
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 shadow-sm">
+                    {% if product.image %}
+                        <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}">
+                    {% endif %}
+                    <div class="card-body">
+                        <h4 class="card-title">{{ product.name }}</h4>
+                        <p class="card-text text-muted">{{ product.description|truncatechars:100 }}</p>
+                        <h5 class="text-primary">{{ product.price }} руб.</h5>
+                        <a href="{% url 'product_detail' product.pk %}" class="btn btn-outline-primary mt-2">Посмотреть</a>
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <div class="col-12 mt-5">
+                <p class="alert alert-secondary fs-4">В этой категории пока нет опубликованных товаров.</p>
+            </div>
+        {% endfor %}
+    </div>
+    
+    <div class="text-center mt-5 mb-5">
+        <a href="{% url 'home' %}" class="btn btn-secondary">Назад на главную</a>
+    </div>
+</div>
+{% endblock %}
